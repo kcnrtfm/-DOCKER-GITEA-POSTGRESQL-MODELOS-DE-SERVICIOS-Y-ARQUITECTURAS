@@ -375,3 +375,43 @@ Completar la instalación inicial de Gitea.
 **Resultado.** Dos contenedores independientes conectados mediante una red virtual, con almacenamiento persistente y comunicación interna entre Gitea y PostgreSQL.
 
 La contraseña `gitea` reproduce el ejemplo de laboratorio y no debe utilizarse en producción. No se publica el puerto de PostgreSQL en el anfitrión.
+
+### Docker Compose y la administración de aplicaciones compuestas
+
+En nuestra arquitectura tradicional, Gitea y PostgreSQL constituyen dos servicios independientes que trabajan conjuntamente para proporcionar una plataforma de gestión de repositorios Git.
+
+Hasta ahora reproducimos esta arquitectura mediante Docker, creando individualmente los contenedores, las redes y los volúmenes necesarios para su funcionamiento.
+
+Sin embargo, podemos considerar el conjunto de estos componentes como **una unidad lógica de despliegue y administración**.
+
+Docker Compose permite representar esta unidad mediante una definición declarativa que describe los servicios, sus configuraciones, dependencias, redes y almacenamiento.
+
+De esta manera, dejamos de administrar individualmente cada recurso y comenzamos a gestionar la aplicación como un conjunto.
+
+### Eficiencia y administración de recursos
+
+Una de las principales ventajas de este modelo es la posibilidad de ejecutar múltiples aplicaciones compuestas sobre un mismo servidor, utilizando entornos de ejecución separados.
+
+A diferencia de una arquitectura basada en máquinas virtuales independientes, los contenedores comparten el kernel del sistema operativo anfitrión. Esto reduce la necesidad de mantener múltiples sistemas operativos completos y puede disminuir el consumo de recursos.
+
+También permite mejorar la velocidad de despliegue, simplificar las actualizaciones y reproducir configuraciones de manera consistente.
+
+Cada aplicación puede disponer de sus propias redes, volúmenes y servicios, manteniendo una separación lógica respecto de las demás. Este aislamiento facilita la organización y administración, aunque no equivale al proporcionado por máquinas virtuales y requiere controles adecuados de seguridad y recursos.
+
+### Mantenimiento y reproducibilidad
+
+La configuración declarativa permite conservar la definición de una aplicación en un archivo, facilitando su documentación, mantenimiento y reproducción en diferentes entornos.
+
+En lugar de ejecutar manualmente una secuencia de comandos para crear cada componente, Docker Compose interpreta la definición y administra los recursos necesarios para ejecutar la aplicación.
+
+Esto reduce las tareas repetitivas y facilita la implementación de cambios, aunque las responsabilidades sobre la seguridad, las actualizaciones y la persistencia de los datos continúan existiendo.
+
+### La arquitectura permanece, cambia su implementación
+
+Lo más importante es comprender que **no hemos cambiado el patrón arquitectónico original**.
+
+Gitea continúa proporcionando las funcionalidades de la aplicación, PostgreSQL administra la información estructurada y ambos se comunican mediante una red. Los datos siguen necesitando almacenamiento persistente y los servicios mantienen sus respectivas responsabilidades.
+
+Lo que cambia es la forma en que proporcionamos, organizamos y administramos la infraestructura necesaria para ejecutarlos.
+
+**Docker Compose nos permite pasar de administrar componentes individuales a gestionar una aplicación compuesta como una unidad, conservando el diseño arquitectónico y simplificando determinados aspectos de su implementación y operación.**
