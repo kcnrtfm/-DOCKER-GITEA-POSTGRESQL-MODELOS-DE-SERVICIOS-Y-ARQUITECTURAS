@@ -311,35 +311,38 @@ docker logs db
 docker network inspect gitea
 ```
 
-#### 9. Inspeccionar los volúmenes y sus datos
+#### 9. Recorrer los directorios de los volúmenes en el anfitrión
+
+En una instalación convencional de Docker Engine sobre GNU/Linux, los datos de los volúmenes locales se almacenan bajo `/var/lib/docker/volumes/`.
+
+Para recorrer esos directorios desde el sistema operativo anfitrión, abrimos una terminal con privilegios de administrador:
 
 ```bash
-docker volume inspect gitea_data
-docker volume inspect postgres_data
+sudo -i
 ```
 
-Para conocer los directorios reales donde Docker almacena los datos en el anfitrión, consultamos el campo `Mountpoint`.
+Accedemos al directorio de los volúmenes y listamos su contenido:
 
 ```bash
-docker volume inspect -f '{{ .Mountpoint }}' gitea_data
-docker volume inspect -f '{{ .Mountpoint }}' postgres_data
+cd /var/lib/docker/volumes
+ls -la
 ```
 
-En una instalación habitual de Docker Engine con permisos de administrador sobre GNU/Linux, estos directorios suelen ser:
-
-```text
-/var/lib/docker/volumes/gitea_data/_data
-/var/lib/docker/volumes/postgres_data/_data
-```
-
-Podemos listar su contenido usando las rutas devueltas por `docker volume inspect`, sin asumir que Docker utiliza siempre `/var/lib/docker`.
+Exploramos los archivos persistentes de Gitea:
 
 ```bash
-sudo ls -la "$(docker volume inspect -f '{{ .Mountpoint }}' gitea_data)"
-sudo ls -la "$(docker volume inspect -f '{{ .Mountpoint }}' postgres_data)"
+cd /var/lib/docker/volumes/gitea_data/_data
+ls -la
 ```
 
-En el interior de los contenedores, los volúmenes están montados en `/data` para Gitea y `/var/lib/postgresql` para PostgreSQL. La ubicación real en el anfitrión puede variar según la configuración de Docker y el modo de ejecución.
+Exploramos los archivos persistentes de PostgreSQL:
+
+```bash
+cd /var/lib/docker/volumes/postgres_data/_data
+ls -la
+```
+
+Estas rutas corresponden a una instalación estándar con el directorio de datos predeterminado de Docker. Si Docker utiliza otra ubicación o funciona en modo rootless, las rutas serán diferentes.
 
 #### 10. Acceder a Gitea
 
