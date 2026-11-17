@@ -191,3 +191,31 @@ Un servicio administrado puede tener un coste directo mayor, pero reducir las ta
 Por lo tanto, **el diseño arquitectónico consiste también en evaluar compromisos entre funcionalidad, seguridad, disponibilidad, complejidad y coste**.
 
 A partir de estas preguntas, podremos analizar diferentes alternativas y seleccionar un modelo de implementación para nuestro laboratorio, justificando las decisiones que nos conduzcan a una arquitectura basada en contenedores.
+
+### Arquitectura tradicional con servidores dedicados
+
+A partir de los requisitos identificados para Gitea y PostgreSQL, podemos considerar una arquitectura cliente-servidor tradicional, basada en la separación de la aplicación y su base de datos.
+
+Este modelo representa una solución habitual en infraestructuras de sistemas, donde los servicios se distribuyen entre servidores independientes para separar sus responsabilidades, recursos y entornos de ejecución.
+
+Nuestra arquitectura está compuesta por dos servidores GNU/Linux conectados a una misma red local `192.168.10.0/24`.
+
+El **servidor de aplicaciones**, con dirección `192.168.10.10`, ejecuta Gitea junto con Git y sus dependencias. Proporciona acceso a la plataforma mediante HTTP/HTTPS y permite realizar operaciones sobre los repositorios mediante SSH. Los repositorios, archivos de configuración y demás datos de la aplicación se encuentran almacenados en su sistema de archivos.
+
+El **servidor de base de datos**, con dirección `192.168.10.20`, ejecuta PostgreSQL. Su responsabilidad es administrar la información estructurada utilizada por Gitea. Dispone de almacenamiento persistente propio para conservar los archivos de la base de datos y sus registros de transacciones.
+
+La comunicación entre ambos servidores se realiza mediante TCP/IP. Gitea establece conexiones con PostgreSQL utilizando el puerto 5432, mientras que los usuarios interactúan únicamente con el servidor de aplicaciones. La base de datos no se encuentra expuesta directamente a los clientes.
+
+Esta separación permite administrar los servicios de manera independiente y aplicar restricciones de acceso específicas para cada componente.
+
+En ambos servidores, las aplicaciones se ejecutan como servicios del sistema operativo, administrados mediante `systemd`. Cada entorno mantiene sus propias dependencias, configuraciones, usuarios y permisos.
+
+La arquitectura incorpora además un destino de copias de seguridad independiente, donde se conservan respaldos de los repositorios Git, la configuración de Gitea y los datos de PostgreSQL, permitiendo recuperar la información ante posibles fallos.
+
+Desde el punto de vista operativo, este modelo implica mantener dos sistemas operativos, administrar sus recursos de procesamiento y memoria, garantizar la conectividad de red y gestionar el almacenamiento y las copias de seguridad.
+
+Estas responsabilidades representan también costes de infraestructura y administración, que forman parte de las decisiones arquitectónicas.
+
+Este modelo arquitectónico es ampliamente utilizado y puede implementarse tanto sobre servidores físicos como en entornos virtualizados. Se trata de una solución válida y consolidada, que permite separar responsabilidades y administrar los componentes de manera independiente.
+
+Sin embargo, podemos explorar otras formas de implementar esta misma arquitectura, buscando optimizar el uso de recursos, simplificar el despliegue y reducir la complejidad operativa. **La contenerización ofrece una alternativa para conservar la organización lógica de los servicios, utilizando un modelo de ejecución más ligero, flexible y reproducible.**
