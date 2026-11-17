@@ -102,5 +102,92 @@ Para que Gitea utilice PostgreSQL, necesitamos resolver una serie de condiciones
 
 Estas dependencias existen independientemente de la tecnología utilizada para desplegar la solución. Resolverlas forma parte del diseño arquitectónico que desarrollaremos durante el laboratorio.
 
+### Planteamiento del diseño arquitectónico
 
+Una vez identificados los componentes, requisitos y dependencias de Gitea y PostgreSQL, debemos determinar cómo organizar e implementar nuestra solución.
 
+Para ello, necesitamos tomar una serie de decisiones arquitectónicas. No existe una única manera de implementar un sistema: podemos utilizar diferentes tecnologías, modelos de servicios e infraestructuras para satisfacer los mismos requisitos.
+
+Antes de seleccionar las herramientas, vamos a plantearnos algunas preguntas.
+
+#### 1. ¿Qué servicios necesitamos y cómo vamos a proporcionarlos?
+
+Nuestra solución requiere una aplicación, una base de datos, almacenamiento y mecanismos de comunicación.
+
+Sin embargo, no todos estos componentes deben necesariamente instalarse y administrarse por nuestra cuenta.
+
+Por ejemplo, PostgreSQL podría implementarse como un servicio instalado directamente sobre un servidor, ejecutarse dentro de un contenedor o consumirse como un servicio de base de datos administrado por un proveedor (DBaaS).
+
+Cada alternativa implica diferentes responsabilidades, niveles de control y costes.
+
+#### 2. ¿Cómo organizamos los componentes y sus relaciones?
+
+Necesitamos establecer qué responsabilidad tendrá cada componente y cómo se relacionará con los demás.
+
+Una arquitectura puede incluir servidores web, aplicaciones, bases de datos, almacenamiento y servicios externos.
+
+Debemos identificar las dependencias entre estos elementos, los mecanismos de comunicación y los recursos que necesitan compartir.
+
+También necesitamos una forma de representar estas relaciones, mediante diagramas y documentación que permitan comprender el funcionamiento del conjunto.
+
+#### 3. ¿Dónde vamos a ejecutar los servicios?
+
+Podemos instalar los componentes sobre un mismo sistema operativo, distribuirlos entre distintos servidores, utilizar máquinas virtuales o ejecutarlos mediante contenedores.
+
+También podemos combinar infraestructura propia con servicios proporcionados por terceros.
+
+Estas alternativas presentan diferencias en aislamiento, rendimiento, disponibilidad, administración y costes.
+
+#### 4. ¿Cómo administramos las dependencias y configuraciones?
+
+Cada aplicación necesita determinados componentes para funcionar: bibliotecas, archivos de configuración, herramientas y versiones específicas de software.
+
+Debemos decidir cómo instalar y mantener estas dependencias, evitar conflictos entre aplicaciones y garantizar que el entorno pueda reproducirse.
+
+Este problema adquiere mayor importancia cuando necesitamos desplegar varios servicios o mantener diferentes versiones de una misma aplicación.
+
+#### 5. ¿Cómo aislamos y protegemos los servicios?
+
+Debemos determinar qué recursos puede utilizar cada componente y qué mecanismos permiten limitar su acceso al resto del sistema.
+
+Podemos emplear usuarios y permisos del sistema operativo, aislamiento de procesos, máquinas virtuales, contenedores y mecanismos de segmentación de redes.
+
+Estas decisiones influyen directamente sobre la seguridad y sobre las consecuencias que podría tener el compromiso de uno de los componentes.
+
+#### 6. ¿Cómo administramos el ciclo de vida de los servicios?
+
+Un servicio necesita mecanismos que permitan iniciarlo, detenerlo, reiniciarlo, actualizarlo y recuperar su funcionamiento ante fallos.
+
+Tradicionalmente, en GNU/Linux utilizamos administradores de servicios como `systemd` para controlar procesos que proporcionan funcionalidades, por ejemplo, un servidor web o un motor de base de datos.
+
+En otros modelos de implementación, como las plataformas de contenedores, estas responsabilidades se administran mediante mecanismos diferentes.
+
+Debemos comprender qué significa ejecutar un servicio y cómo cambia su administración según el entorno elegido.
+
+#### 7. ¿Cómo resolvemos la comunicación y la persistencia?
+
+Nuestros componentes necesitan intercambiar información y conservar determinados datos.
+
+En el caso de Gitea y PostgreSQL, debemos garantizar que la aplicación pueda conectarse con la base de datos y que la información permanezca disponible aunque los procesos se detengan o se reemplacen.
+
+Esto implica tomar decisiones sobre redes, almacenamiento, permisos de acceso, copias de seguridad y recuperación.
+
+#### 8. ¿Cómo describimos y reproducimos nuestra arquitectura?
+
+Finalmente, necesitamos establecer cómo documentar e implementar las decisiones tomadas.
+
+Podemos configurar cada componente manualmente o utilizar herramientas que permitan describir de manera declarativa los servicios, sus dependencias y los recursos necesarios para ejecutarlos.
+
+Este enfoque permite automatizar despliegues, mantener configuraciones reproducibles y facilitar la administración de sistemas compuestos por varios servicios.
+
+### El coste como criterio de diseño
+
+Todas estas decisiones tienen consecuencias técnicas y económicas.
+
+No debemos considerar únicamente el coste de adquirir o contratar infraestructura, sino también el esfuerzo necesario para instalarla, administrarla, mantenerla y protegerla.
+
+Un servicio administrado puede tener un coste directo mayor, pero reducir las tareas operativas. Una infraestructura autogestionada puede ofrecer mayor control, aunque requiera más conocimientos, tiempo y recursos de administración.
+
+Por lo tanto, **el diseño arquitectónico consiste también en evaluar compromisos entre funcionalidad, seguridad, disponibilidad, complejidad y coste**.
+
+A partir de estas preguntas, podremos analizar diferentes alternativas y seleccionar un modelo de implementación para nuestro laboratorio, justificando las decisiones que nos conduzcan a una arquitectura basada en contenedores.
