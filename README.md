@@ -216,6 +216,10 @@ Desde el punto de vista operativo, este modelo implica mantener dos sistemas ope
 
 Estas responsabilidades representan también costes de infraestructura y administración, que forman parte de las decisiones arquitectónicas.
 
-Este modelo arquitectónico es ampliamente utilizado y puede implementarse tanto sobre servidores físicos como en entornos virtualizados. Se trata de una solución válida y consolidada, que permite separar responsabilidades y administrar los componentes de manera independiente.
+Este modelo puede implementarse tanto sobre servidores físicos como en entornos virtualizados. Se trata de una solución válida y consolidada, que permite separar responsabilidades y administrar los componentes de manera independiente.
 
-Sin embargo, podemos explorar otras formas de implementar esta misma arquitectura, buscando optimizar el uso de recursos, simplificar el despliegue y reducir la complejidad operativa. **La contenerización ofrece una alternativa para conservar la organización lógica de los servicios, utilizando un modelo de ejecución más ligero, flexible y reproducible.**
+**La organización de esta infraestructura responde a un patrón arquitectónico ampliamente utilizado**, basado en la separación de responsabilidades, la especialización de los componentes y la comunicación mediante interfaces definidas.
+
+No es casualidad que encontremos estructuras similares en numerosos sistemas informáticos. Aunque cambien las aplicaciones, las tecnologías o la cantidad de servidores, las necesidades de procesamiento, almacenamiento y comunicación siguen presentes.
+
+Por eso, las arquitecturas tienden a reproducir modelos conocidos que han demostrado ser eficaces para resolver problemas recurrentes. **Lo que permanece es el patrón arquitectónico; lo que puede variar es la forma de implementarlo.**
