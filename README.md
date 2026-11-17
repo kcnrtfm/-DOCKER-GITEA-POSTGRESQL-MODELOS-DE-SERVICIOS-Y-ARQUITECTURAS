@@ -48,6 +48,8 @@ Además la arquitectura de sistemas tiene un impacto directo sobre la **segurida
 
 
 
+## Laboratorio: Gitea y PostgreSQL
+
 ### Presentación del laboratorio
 
 En este laboratorio vamos a utilizar Gitea y PostgreSQL como caso de estudio para analizar el diseño de una arquitectura de servicios.
