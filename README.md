@@ -1,5 +1,7 @@
 # Arquitectura de servicios: Docker, Gitea y PostgreSQL
 
+Video del laboratorio: https://www.youtube.com/live/_gRck8Twc4g
+
 ## Introducción
 
 Cuando desplegamos una aplicación, no solamente debemos considerar cómo instalarla y ponerla en funcionamiento. También necesitamos comprender qué componentes intervienen, cómo se relacionan entre sí, qué recursos necesitan y qué responsabilidades cumple cada uno dentro del sistema.
