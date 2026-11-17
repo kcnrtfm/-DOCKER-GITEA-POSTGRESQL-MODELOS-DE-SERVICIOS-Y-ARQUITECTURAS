@@ -230,11 +230,15 @@ Vamos a reproducir manualmente la configuración del Compose oficial utilizando 
 
 #### 1. Crear la red
 
+En la arquitectura tradicional, los servidores Gitea y PostgreSQL están conectados a una misma red local. Aquí reproducimos esa comunicación mediante una red virtual de Docker, que permite intercambiar tráfico TCP/IP entre los contenedores.
+
 ```bash
 docker network create gitea
 ```
 
 #### 2. Crear los volúmenes
+
+En los servidores dedicados, la información se conserva en discos o sistemas de almacenamiento persistente. Los volúmenes Docker cumplen esa función para los datos de Gitea y PostgreSQL, independientemente de la vida de los contenedores. Un volumen es un recurso lógico y no implica disponer de un disco físico separado.
 
 ```bash
 docker volume create gitea_data
@@ -243,12 +247,16 @@ docker volume create postgres_data
 
 #### 3. Descargar las imágenes
 
+Cada servidor tradicional dispone de un sistema operativo y de los programas necesarios para prestar su servicio. Las imágenes Docker contienen la aplicación y su entorno de espacio de usuario. A diferencia de una máquina virtual, los contenedores no ejecutan un kernel propio, sino que comparten el del anfitrión.
+
 ```bash
 docker pull docker.gitea.com/gitea:28.4.0
 docker pull postgres:18
 ```
 
 #### 4. Crear el contenedor PostgreSQL
+
+En el modelo tradicional, PostgreSQL se ejecuta en un servidor dedicado. Aquí dispone de un contenedor propio, conectado a la red virtual `gitea` y asociado al volumen `postgres_data`. La separación del entorno de ejecución no equivale al aislamiento de un servidor físico.
 
 ```bash
 docker run -d \
@@ -264,6 +272,8 @@ docker run -d \
 
 #### 5. Verificar PostgreSQL
 
+Comprobamos que el servicio de base de datos está en ejecución y acepta conexiones, igual que verificaríamos el proceso PostgreSQL instalado en un servidor GNU/Linux.
+
 ```bash
 docker ps
 ```
@@ -273,6 +283,8 @@ docker exec db pg_isready -U gitea -d gitea
 ```
 
 #### 6. Crear el contenedor Gitea
+
+El segundo servidor tradicional ejecuta Gitea y accede a PostgreSQL por la red. Lo representamos con otro contenedor conectado a `gitea`, con su volumen `gitea_data`. La dirección `db:5432` identifica al contenedor de base de datos mediante la resolución de nombres de Docker; los puertos publicados habilitan el acceso de los usuarios a Gitea.
 
 ```bash
 docker run -d \
@@ -296,6 +308,8 @@ docker run -d \
 
 #### 7. Verificar los contenedores
 
+Así como revisaríamos el estado y los registros de los servicios en cada servidor, comprobamos aquí los contenedores y sus registros de ejecución.
+
 ```bash
 docker ps
 ```
@@ -307,11 +321,15 @@ docker logs db
 
 #### 8. Inspeccionar la red
 
+La inspección permite observar qué contenedores pertenecen a la red virtual que reemplaza, en este despliegue, la conexión entre los dos servidores de nuestra arquitectura de referencia.
+
 ```bash
 docker network inspect gitea
 ```
 
 #### 9. Recorrer los directorios de los volúmenes en el anfitrión
+
+En la arquitectura tradicional, los datos residen en el almacenamiento de cada servidor. Aquí los volúmenes se materializan en el sistema de archivos del anfitrión Docker. Los recorremos para comprobar dónde persiste la información fuera de los contenedores.
 
 En una instalación convencional de Docker Engine sobre GNU/Linux, los datos de los volúmenes locales se almacenan bajo `/var/lib/docker/volumes/`.
 
