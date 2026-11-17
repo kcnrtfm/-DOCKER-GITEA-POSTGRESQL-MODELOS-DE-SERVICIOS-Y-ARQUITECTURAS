@@ -223,3 +223,134 @@ Este modelo puede implementarse tanto sobre servidores físicos como en entornos
 No es casualidad que encontremos estructuras similares en numerosos sistemas informáticos. Aunque cambien las aplicaciones, las tecnologías o la cantidad de servidores, las necesidades de procesamiento, almacenamiento y comunicación siguen presentes.
 
 Por eso, las arquitecturas tienden a reproducir modelos conocidos que han demostrado ser eficaces para resolver problemas recurrentes. **Lo que permanece es el patrón arquitectónico; lo que puede variar es la forma de implementarlo.**
+
+### Despliegue manual de Gitea y PostgreSQL con Docker
+
+Vamos a reproducir manualmente la configuración del Compose oficial utilizando comandos Docker. Mantendremos las versiones y los parámetros principales del ejemplo, utilizando volúmenes Docker para la persistencia.
+
+#### 1. Crear la red
+
+```bash
+docker network create gitea
+```
+
+#### 2. Crear los volúmenes
+
+```bash
+docker volume create gitea_data
+docker volume create postgres_data
+```
+
+#### 3. Descargar las imágenes
+
+```bash
+docker pull docker.gitea.com/gitea:28.4.0
+docker pull postgres:18
+```
+
+#### 4. Crear el contenedor PostgreSQL
+
+```bash
+docker run -d \
+  --name db \
+  --restart always \
+  --network gitea \
+  -e POSTGRES_USER=gitea \
+  -e POSTGRES_PASSWORD=gitea \
+  -e POSTGRES_DB=gitea \
+  -v postgres_data:/var/lib/postgresql \
+  postgres:18
+```
+
+#### 5. Verificar PostgreSQL
+
+```bash
+docker ps
+```
+
+```bash
+docker exec db pg_isready -U gitea -d gitea
+```
+
+#### 6. Crear el contenedor Gitea
+
+```bash
+docker run -d \
+  --name gitea \
+  --restart always \
+  --network gitea \
+  -p 3000:3000 \
+  -p 222:22 \
+  -e USER_UID=1000 \
+  -e USER_GID=1000 \
+  -e GITEA__database__DB_TYPE=postgres \
+  -e GITEA__database__HOST=db:5432 \
+  -e GITEA__database__NAME=gitea \
+  -e GITEA__database__USER=gitea \
+  -e GITEA__database__PASSWD=gitea \
+  -v gitea_data:/data \
+  -v /etc/timezone:/etc/timezone:ro \
+  -v /etc/localtime:/etc/localtime:ro \
+  docker.gitea.com/gitea:28.4.0
+```
+
+#### 7. Verificar los contenedores
+
+```bash
+docker ps
+```
+
+```bash
+docker logs gitea
+docker logs db
+```
+
+#### 8. Inspeccionar la red
+
+```bash
+docker network inspect gitea
+```
+
+#### 9. Inspeccionar los volúmenes y sus datos
+
+```bash
+docker volume inspect gitea_data
+docker volume inspect postgres_data
+```
+
+Para conocer los directorios reales donde Docker almacena los datos en el anfitrión, consultamos el campo `Mountpoint`.
+
+```bash
+docker volume inspect -f '{{ .Mountpoint }}' gitea_data
+docker volume inspect -f '{{ .Mountpoint }}' postgres_data
+```
+
+En una instalación habitual de Docker Engine con permisos de administrador sobre GNU/Linux, estos directorios suelen ser:
+
+```text
+/var/lib/docker/volumes/gitea_data/_data
+/var/lib/docker/volumes/postgres_data/_data
+```
+
+Podemos listar su contenido usando las rutas devueltas por `docker volume inspect`, sin asumir que Docker utiliza siempre `/var/lib/docker`.
+
+```bash
+sudo ls -la "$(docker volume inspect -f '{{ .Mountpoint }}' gitea_data)"
+sudo ls -la "$(docker volume inspect -f '{{ .Mountpoint }}' postgres_data)"
+```
+
+En el interior de los contenedores, los volúmenes están montados en `/data` para Gitea y `/var/lib/postgresql` para PostgreSQL. La ubicación real en el anfitrión puede variar según la configuración de Docker y el modo de ejecución.
+
+#### 10. Acceder a Gitea
+
+Desde un navegador web:
+
+```text
+http://IP_DEL_SERVIDOR:3000
+```
+
+Completar la instalación inicial de Gitea.
+
+**Resultado.** Dos contenedores independientes conectados mediante una red virtual, con almacenamiento persistente y comunicación interna entre Gitea y PostgreSQL.
+
+La contraseña `gitea` reproduce el ejemplo de laboratorio y no debe utilizarse en producción. No se publica el puerto de PostgreSQL en el anfitrión.
