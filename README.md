@@ -415,3 +415,72 @@ Gitea continúa proporcionando las funcionalidades de la aplicación, PostgreSQL
 Lo que cambia es la forma en que proporcionamos, organizamos y administramos la infraestructura necesaria para ejecutarlos.
 
 **Docker Compose nos permite pasar de administrar componentes individuales a gestionar una aplicación compuesta como una unidad, conservando el diseño arquitectónico y simplificando determinados aspectos de su implementación y operación.**
+
+### Administración de la aplicación con Docker Compose
+
+El archivo [`compose.yaml`](compose.yaml) reúne la definición de Gitea, PostgreSQL, su red y sus volúmenes. A diferencia del despliegue manual, Compose administra estos recursos como un único proyecto, sin eliminar la independencia de los servicios.
+
+Para evitar conflictos de nombres y puertos, debemos detener y eliminar los contenedores `gitea` y `db` del despliegue manual anterior antes de utilizar Compose. Si conservamos los volúmenes, sus datos permanecen almacenados.
+
+Desde el directorio del repositorio, podemos administrar el conjunto con los siguientes comandos.
+
+**Validar la configuración**
+
+```bash
+docker compose config
+```
+
+**Crear e iniciar todos los servicios**
+
+```bash
+docker compose up -d
+```
+
+**Consultar el estado del conjunto**
+
+```bash
+docker compose ps
+```
+
+**Consultar los registros de ambos servicios**
+
+```bash
+docker compose logs -f
+```
+
+**Detener los servicios sin eliminar sus contenedores**
+
+```bash
+docker compose stop
+```
+
+**Volver a iniciar los servicios**
+
+```bash
+docker compose start
+```
+
+**Reiniciar los servicios**
+
+```bash
+docker compose restart
+```
+
+**Detener y retirar los contenedores y la red del proyecto**
+
+```bash
+docker compose down
+```
+
+Los volúmenes persistentes se conservan con `down`. Para eliminar también los volúmenes y sus datos, en un laboratorio descartable, se utiliza `docker compose down -v`. Esta operación destruye los datos persistentes del proyecto.
+
+**Descargar las imágenes y recrear los servicios con la configuración declarada**
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Así, las operaciones que antes requerían administrar individualmente contenedores, red y almacenamiento pueden realizarse sobre la aplicación compuesta como una unidad.
+
+La contraseña `gitea` incluida en `compose.yaml` se conserva para reproducir el laboratorio y no es adecuada para producción.
