@@ -484,3 +484,21 @@ docker compose up -d
 Así, las operaciones que antes requerían administrar individualmente contenedores, red y almacenamiento pueden realizarse sobre la aplicación compuesta como una unidad.
 
 La contraseña `gitea` incluida en `compose.yaml` se conserva para reproducir el laboratorio y no es adecuada para producción.
+
+## Referencias bibliográficas
+
+### Arquitectura de sistemas
+
+- Bass, L., Clements, P. y Kazman, R. (2021). *Software Architecture in Practice* (4.ª ed.). Addison-Wesley.  
+  https://www.pearson.com/en-us/subject-catalog/p/software-architecture-in-practice/P200000000111
+
+- Richards, M. y Ford, N. (2020). *Fundamentals of Software Architecture: An Engineering Approach*. O'Reilly Media.  
+  https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/
+
+### Documentación técnica
+
+- Docker Inc. *How Compose Works*.  
+  https://docs.docker.com/compose/intro/compose-application-model/
+
+- Gitea. *Installation with Docker*.  
+  https://docs.gitea.com/installation/install-with-docker/
